@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     fclose($handle);
 
     // Redirect to a success page or do something else
-    header("Location: success.php");
+    header("Location: success.html");
     exit();
 }
 ?>
