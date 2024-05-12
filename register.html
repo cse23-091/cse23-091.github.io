@@ -55,19 +55,19 @@
 
 <div id="id01" class="modal">
   <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
-  <form class="modal-content" action="/action_page.php">
+  <form id="myForm" class="modal-content" >
     <div class="container">
       <h1>Sign Up</h1>
       <p>Please fill in this form to create an account.</p>
       <hr>
       <label for="email"><b>Email</b></label>
-      <input type="text" placeholder="Enter Email" name="email" required>
+      <input id="email" type="text" placeholder="Enter Email" name="email" required>
 
       <label for="psw"><b>Password</b></label>
-      <input type="password" placeholder="Enter Password" name="psw" required>
+      <input id="pwd"type="password" placeholder="Enter Password" name="psw" required>
 
       <label for="psw-repeat"><b>Repeat Password</b></label>
-      <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
+      <input id="rpt" type="password" placeholder="Repeat Password" name="psw-repeat" required>
       
       <label>
         <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
@@ -82,11 +82,12 @@
     </div>
   </form>
 </div>
+<div id="status"></div>
 </div>
   <!-- end of main section -->
 
   <footer>
-	 <p class="solidwhite">&copy; 2024 WARNER BROS. All rights reserved.</p> 	<!-- Add font awesome icons -->
+	 <p class="solidwhite">&copy; 2024 Movie Site. All rights reserved.</p> 	<!-- Add font awesome icons -->
 	<div id="social-media-links">
             <a href="https://www.facebook.com/WarnerBrosPictures/" target="_blank"><i class="fab fa-facebook-square"></i></a>
             <a href="https://twitter.com/warnerbros" target="_blank"><i class="fab fab fa-twitter-square"></i></a>
@@ -121,5 +122,79 @@ window.onscroll = function() {
   }
   prevScrollpos = currentScrollPos;
 }</script>
+<!-- form feedback-->
+ <script>
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Call your JavaScript function to handle form data
+      downloadFormData();
+    });
+
+    function downloadFormData() {
+      try {
+        // Retrieve the data from form fields
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('pwd').value;
+		const repeat = document.getElementById('rpt').value;
+		
+
+        // Create data object
+        const data = {
+          Email: email,
+          Password: pass,
+		  Repeat: repeat,
+        };
+
+        // Store data in localStorage
+        localStorage.setItem('form_data', JSON.stringify([data]));
+
+        // Update status message
+        document.getElementById('status').textContent = 'Form data saved successfully!';
+
+        // Call function to download the text file
+        generateAndDownloadFile();
+      } catch (error) {
+        console.error('Error saving form data:', error);
+        // Update status message
+        document.getElementById('status').textContent = 'Error saving form data. Check console for details.';
+      }
+    }
+
+    function generateAndDownloadFile() {
+      try {
+        // Retrieve the stored data from localStorage
+        const storedData = localStorage.getItem('form_data');
+
+        // Check if data exists
+        if (storedData) {
+          // Convert data to a string
+          const dataString = JSON.parse(storedData).map(data => `Email: ${data.Email}, Password: ${data.Password},Repeat: ${data.Repeat}`).join('\n');
+
+          // Create a Blob object containing the data
+          const blob = new Blob([dataString], { type: 'text/plain' });
+
+          // Create a temporary anchor element
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'form_data.txt';
+
+          // Programmatically click the anchor element to trigger download
+          a.click();
+
+          // Clean up resources
+          URL.revokeObjectURL(a.href);
+        } else {
+          console.log('No data found in localStorage.');
+          // Update status message
+          document.getElementById('status').textContent = 'No data found in localStorage.';
+        }
+      } catch (error) {
+        console.error('Error generating text file:', error);
+        // Update status message
+        document.getElementById('status').textContent = 'Error generating text file. Check console for details.';
+      }
+    }
+  </script>
 </body>
 </html>
